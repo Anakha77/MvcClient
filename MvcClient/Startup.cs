@@ -1,4 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using IdentityModel;
+using IdentityServer4;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -50,10 +52,11 @@ namespace MvcClient
                 options.ResponseType = "code id_token";
 
                 options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
+                //options.GetClaimsFromUserInfoEndpoint = true;
 
-                options.Scope.Add(IdentityServer4.IdentityServerConstants.StandardScopes.OpenId);
-                options.Scope.Add(IdentityServer4.IdentityServerConstants.StandardScopes.Profile);
+                options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
+                options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
+                options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
             });
         }
 
