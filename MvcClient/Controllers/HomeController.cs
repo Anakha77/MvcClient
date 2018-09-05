@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcClient.Models;
+using Newtonsoft.Json.Linq;
 
 namespace MvcClient.Controllers
 {
@@ -15,23 +16,33 @@ namespace MvcClient.Controllers
             return View();
         }
 
-        public IActionResult About()
+        [Authorize]
+        public IActionResult Secure()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Secure page.";
 
             return View();
         }
 
-        public IActionResult Contact()
+        public async Task Logout()
         {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            await HttpContext.SignOutAsync("Cookies");
+            await HttpContext.SignOutAsync("oidc");
         }
-
         public IActionResult Privacy()
         {
             return View();
+        }
+        public async Task<IActionResult> CallApiUsingUserAccessToken()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            var client = new HttpClient();
+            client.SetBearerToken(accessToken);
+            var content = await client.GetStringAsync("http://localhost:5001/identity");
+
+            ViewBag.Json = JArray.Parse(content).ToString();
+            return View("Json");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
