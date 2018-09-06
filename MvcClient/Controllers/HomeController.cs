@@ -19,8 +19,6 @@ namespace MvcClient.Controllers
         [Authorize]
         public IActionResult Secure()
         {
-            ViewData["Message"] = "Secure page.";
-
             return View();
         }
 
@@ -35,11 +33,11 @@ namespace MvcClient.Controllers
         }
         public async Task<IActionResult> CallApiUsingUserAccessToken()
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
 
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var content = await client.GetStringAsync("http://localhost:5001/identity");
+            string content = await client.GetStringAsync("http://localhost:5001/identity");
 
             ViewBag.Json = JArray.Parse(content).ToString();
             return View("Json");
